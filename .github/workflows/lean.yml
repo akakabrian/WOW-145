@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - 'agent/**'
     paths-ignore:
       - lean-ci.log
       - lean-source-sha256.txt
