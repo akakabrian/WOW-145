@@ -1,0 +1,94 @@
+name: Verify WOWII 145 ARM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/lean-arm.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-arm:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: 172a16e75719b66d5cd68beae76fdae85253b16e
+          fetch-depth: 0
+
+      - name: Install exact Lean toolchain
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve pinned dependencies
+        run: lake update
+
+      - name: Restore ARM dependency build cache
+        uses: actions/cache@v4
+        with:
+          path: .lake/packages/formal_conjectures/.lake/build
+          key: wow145-arm-dependencies-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+
+      - name: Download Mathlib cache
+        run: lake exe cache get
+
+      - name: Verify exact candidate
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          set -o pipefail
+          {
+            echo '$ lean --version'
+            lean --version
+            echo '$ git rev-parse HEAD'
+            git rev-parse HEAD
+            echo '$ forbidden-token and dependency scan'
+            if grep -RInP '\b(sorry|admit|native_decide)\b|^[[:space:]]*axiom[[:space:]]|WOW146|wow_146' \
+                WOW145 WOW145.lean lakefile.toml; then
+              echo 'Forbidden shortcut or dependency found.'
+              exit 1
+            fi
+            echo '$ source hashes'
+            find WOW145 -type f -name '*.lean' -print0 \
+              | sort -z \
+              | xargs -0 sha256sum \
+              | tee lean-arm-source-sha256.txt
+            sha256sum WOW145.lean lean-toolchain lakefile.toml \
+              | tee -a lean-arm-source-sha256.txt
+            echo '$ lake build WOW145'
+            lake build WOW145
+            echo '$ lake env lean -DwarningAsError=true WOW145/Audit.lean'
+            lake env lean -DwarningAsError=true WOW145/Audit.lean
+            echo '$ lake --wfail build'
+            lake --wfail build
+          } > lean-arm-ci.log 2>&1
+          status=$?
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          printf '\nEXIT_STATUS=%s\n' "$status" >> lean-arm-ci.log
+          exit 0
+
+      - name: Upload ARM verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wowii-145-arm-evidence-${{ github.run_id }}
+          path: |
+            lean-arm-ci.log
+            lean-arm-source-sha256.txt
+            lake-manifest.json
+          if-no-files-found: warn
+
+      - name: Fail job when Lean failed
+        if: steps.verify.outputs.exit_status != '0'
+        run: exit 1
