@@ -5,13 +5,16 @@ on:
     branches:
       - main
       - 'agent/**'
+    paths-ignore:
+      - lean-ci.log
+      - lean-source-sha256.txt
   pull_request:
     branches:
       - main
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -45,41 +48,39 @@ jobs:
       - name: Download Mathlib cache
         run: lake exe cache get
 
-      - name: Reject forbidden proof shortcuts
+      - name: Verify and capture compiler log
+        id: verify
         shell: bash
         run: |
-          set -euo pipefail
-          if grep -RInP '\b(sorry|admit|native_decide)\b|^[[:space:]]*axiom[[:space:]]' \
-              WOW145 WOW145.lean; then
-            echo 'Forbidden proof shortcut found.'
-            exit 1
-          fi
-
-      - name: Record source hashes
-        shell: bash
-        run: |
-          find WOW145 -type f -name '*.lean' -print0 \
-            | sort -z \
-            | xargs -0 sha256sum \
-            | tee lean-source-sha256.txt
-          sha256sum WOW145.lean lean-toolchain lakefile.toml \
-            | tee -a lean-source-sha256.txt
-
-      - name: Kernel-check Conjecture 145
-        shell: bash
-        run: |
-          set -euo pipefail
+          set +e
           set -o pipefail
           {
             echo '$ lean --version'
             lean --version
+            echo '$ forbidden-token scan'
+            if grep -RInP '\b(sorry|admit|native_decide)\b|^[[:space:]]*axiom[[:space:]]' \
+                WOW145 WOW145.lean; then
+              echo 'Forbidden proof shortcut found.'
+              exit 1
+            fi
+            echo '$ source hashes'
+            find WOW145 -type f -name '*.lean' -print0 \
+              | sort -z \
+              | xargs -0 sha256sum \
+              | tee lean-source-sha256.txt
+            sha256sum WOW145.lean lean-toolchain lakefile.toml \
+              | tee -a lean-source-sha256.txt
             echo '$ lake build WOW145'
             lake build WOW145
             echo '$ lake env lean -DwarningAsError=true WOW145/Audit.lean'
             lake env lean -DwarningAsError=true WOW145/Audit.lean
             echo '$ lake --wfail build'
             lake --wfail build
-          } 2>&1 | tee lean-ci.log
+          } > lean-ci.log 2>&1
+          status=$?
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          printf '\nEXIT_STATUS=%s\n' "$status" >> lean-ci.log
+          exit 0
 
       - name: Upload verification evidence
         if: always()
@@ -91,3 +92,18 @@ jobs:
             lean-source-sha256.txt
             lake-manifest.json
           if-no-files-found: warn
+
+      - name: Publish compiler log on branch pushes
+        if: always() && github.event_name == 'push'
+        shell: bash
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          test -f lean-ci.log && git add -f lean-ci.log || true
+          test -f lean-source-sha256.txt && git add -f lean-source-sha256.txt || true
+          git commit -m 'ci: publish Lean verification evidence' || true
+          git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Fail job when Lean failed
+        if: steps.verify.outputs.exit_status != '0'
+        run: exit 1
