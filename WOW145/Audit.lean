@@ -1,0 +1,4 @@
+import WOW145.Conjecture145
+
+#print axioms WrittenOnTheWallII.GraphConjecture145.radius_toNat_eq_two_of_localIndependenceMin_eq_one
+#print axioms WrittenOnTheWallII.GraphConjecture145.conjecture145
