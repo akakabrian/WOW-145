@@ -12,6 +12,9 @@ on:
   pull_request:
     branches:
       - main
+  issues:
+    types:
+      - opened
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
