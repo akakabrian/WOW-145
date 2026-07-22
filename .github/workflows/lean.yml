@@ -1,0 +1,93 @@
+name: Verify WOWII 145
+
+on:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install exact Lean toolchain
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve pinned dependencies
+        run: lake update
+
+      - name: Restore dependency build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .lake/packages/formal_conjectures/.lake/build
+            .lake/packages/wow_146/.lake/build
+          key: wow145-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}
+
+      - name: Download Mathlib cache
+        run: lake exe cache get
+
+      - name: Reject forbidden proof shortcuts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInP '\b(sorry|admit|native_decide)\b|^[[:space:]]*axiom[[:space:]]' \
+              WOW145 WOW145.lean; then
+            echo 'Forbidden proof shortcut found.'
+            exit 1
+          fi
+
+      - name: Record source hashes
+        shell: bash
+        run: |
+          find WOW145 -type f -name '*.lean' -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            | tee lean-source-sha256.txt
+          sha256sum WOW145.lean lean-toolchain lakefile.toml \
+            | tee -a lean-source-sha256.txt
+
+      - name: Kernel-check Conjecture 145
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          {
+            echo '$ lean --version'
+            lean --version
+            echo '$ lake build WOW145'
+            lake build WOW145
+            echo '$ lake env lean -DwarningAsError=true WOW145/Audit.lean'
+            lake env lean -DwarningAsError=true WOW145/Audit.lean
+            echo '$ lake --wfail build'
+            lake --wfail build
+          } 2>&1 | tee lean-ci.log
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wowii-145-lean-evidence-${{ github.run_id }}
+          path: |
+            lean-ci.log
+            lean-source-sha256.txt
+            lake-manifest.json
+          if-no-files-found: warn
