@@ -1,0 +1,201 @@
+$ lean --version
+Lean (version 4.27.0, aarch64-unknown-linux-gnu, commit db93fe1608548721853390a10cd40580fe7d22ae, Release)
+$ git rev-parse HEAD
+172a16e75719b66d5cd68beae76fdae85253b16e
+$ forbidden-token and dependency scan
+$ source hashes
+f20a907d1a3e8617c0be3d38cf1852156f38e766323cd4f4967de9aa7c7b9b1d  WOW145/Audit.lean
+ec765a10f4e81af91d170dea9152b7f98071863fca2612fa7000416823652961  WOW145/Conjecture145.lean
+0d89d044e44010d76ad7761a6f3b0ebaf2077de12e6aebfdebc21e4c1d0b2b94  WOW145/ExceptionalCase.lean
+b1b735cac97aa8e848ef2bd17d55896e699494e41a3434cab8ca3d3eee362cd7  WOW145/ExceptionalConstruction.lean
+171720eacff2e223c6fa241cf454000aabd7ad619b1baba555c54914542eaec6  WOW145/GlobalBounds.lean
+46c43716ff7566bd3b7f329cd87febe55823f4f060c1a30355ac8886d3e6f48c  WOW145/Metric.lean
+2f0bd929ed253770a145b78a6a182c473a9489f53fb229cfa90b26e7ff6a5eec  WOW145/RadiusBridge.lean
+f1681f90595046af961e0d1f337aef8035343e21cfa2d23b1e99a0df3e086837  WOW145.lean
+d55ca0039a5479db5b38919d005b2c427b89b3be4f0184a20f2f4eae931f5bdb  lean-toolchain
+7d496e18de31255082ff18b610503eedd2dd815957785af1b7b2851f7d7ac951  lakefile.toml
+$ lake build WOW145
+✔ [1788/1801] Built FormalConjecturesForMathlib.Combinatorics.SimpleGraph.LargestInducedTree (1.2s)
+✔ [1789/1801] Built FormalConjecturesForMathlib.Combinatorics.SimpleGraph.Independence (1.3s)
+✔ [1790/1801] Built FormalConjecturesForMathlib.Combinatorics.SimpleGraph.VertexDistance (2.3s)
+✔ [1791/1801] Built FormalConjecturesForMathlib.Combinatorics.SimpleGraph.Eccentricity (1.7s)
+✔ [1792/1801] Built FormalConjecturesForMathlib.WrittenOnTheWallII.GraphConjecture142Proof (15s)
+ℹ [1793/1801] Built WOW145.GlobalBounds (2.1s)
+info: WOW145/GlobalBounds.lean:59:0: 'SimpleGraph.diam_succ_le_largestInducedTreeSize' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/GlobalBounds.lean:60:0: 'SimpleGraph.eccSet_periphery_add_one_le_diam' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/GlobalBounds.lean:61:0: 'SimpleGraph.diam_le_two_mul_radius_toNat' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [1794/1801] Built WOW145.Metric (2.2s)
+warning: WOW145/Metric.lean:30:0: automatically included section variable(s) unused in theorem `WOW145.exists_center_dist_le_two_of_radius_eq_two`:
+  [DecidableEq α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:47:0: automatically included section variable(s) unused in theorem `WOW145.exists_middle_of_dist_eq_two`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:62:0: automatically included section variable(s) unused in theorem `WOW145.exists_two_middle_of_dist_eq_three`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:79:0: automatically included section variable(s) unused in theorem `WOW145.dist_le_two_of_adj_adj`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:83:0: automatically included section variable(s) unused in theorem `WOW145.dist_le_three_of_adj_adj_adj`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:88:0: automatically included section variable(s) unused in theorem `WOW145.not_adj_of_two_le_dist`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: WOW145/Metric.lean:94:0: 'WOW145.exists_center_dist_le_two_of_radius_eq_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:95:0: 'WOW145.exists_middle_of_dist_eq_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:96:0: 'WOW145.exists_two_middle_of_dist_eq_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:97:0: 'WOW145.dist_le_two_of_adj_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:98:0: 'WOW145.dist_le_three_of_adj_adj_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:99:0: 'WOW145.not_adj_of_two_le_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1795/1801] Built WOW145.RadiusBridge (2.0s)
+info: WOW145/RadiusBridge.lean:121:0: 'WrittenOnTheWallII.GraphConjecture145.exists_center_dist_le_two_of_localIndependenceMin_compl_eq_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/RadiusBridge.lean:122:0: 'WrittenOnTheWallII.GraphConjecture145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [1796/1801] Built WOW145.ExceptionalConstruction (3.0s)
+info: WOW145/ExceptionalConstruction.lean:346:0: 'WOW145.Walk.six_le_largestInducedTreeSize_of_geodesic_four_add_unique_leaf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/ExceptionalConstruction.lean:347:0: 'WOW145.six_le_largestInducedTreeSize_of_three_unique_insertions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/ExceptionalConstruction.lean:348:0: 'WOW145.six_le_largestInducedTreeSize_of_cross_arm' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1797/1801] Built WOW145.ExceptionalCase (2.4s)
+info: WOW145/ExceptionalCase.lean:215:0: 'WOW145.exceptional_case' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1798/1801] Built WOW145.Conjecture145 (2.2s)
+info: WOW145/Conjecture145.lean:76:0: 'WrittenOnTheWallII.GraphConjecture145.conjecture145' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1799/1801] Built WOW145.Audit (1.0s)
+info: WOW145/Audit.lean:3:0: 'WOW145.exceptional_case' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Audit.lean:4:0: 'WrittenOnTheWallII.GraphConjecture145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/Audit.lean:5:0: 'WrittenOnTheWallII.GraphConjecture145.conjecture145' depends on axioms: [propext, Classical.choice, Quot.sound]
+✔ [1800/1801] Built WOW145 (1.6s)
+Build completed successfully (1801 jobs).
+$ lake env lean -DwarningAsError=true WOW145/Audit.lean
+'WOW145.exceptional_case' depends on axioms: [propext, Classical.choice, Quot.sound]
+'WrittenOnTheWallII.GraphConjecture145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'WrittenOnTheWallII.GraphConjecture145.conjecture145' depends on axioms: [propext, Classical.choice, Quot.sound]
+$ lake --wfail build
+ℹ [1792/1801] Replayed WOW145.GlobalBounds
+info: WOW145/GlobalBounds.lean:59:0: 'SimpleGraph.diam_succ_le_largestInducedTreeSize' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/GlobalBounds.lean:60:0: 'SimpleGraph.eccSet_periphery_add_one_le_diam' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/GlobalBounds.lean:61:0: 'SimpleGraph.diam_le_two_mul_radius_toNat' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [1793/1801] Replaying WOW145.Metric
+trace: .> LEAN_PATH=/home/runner/work/WOW-145/WOW-145/.lake/packages/Cli/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/batteries/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/Qq/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/aesop/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/importGraph/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/plausible/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/mathlib/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/packages/formal_conjectures/.lake/build/lib/lean:/home/runner/work/WOW-145/WOW-145/.lake/build/lib/lean /home/runner/.elan/toolchains/leanprover--lean4---v4.27.0/bin/lean /home/runner/work/WOW-145/WOW-145/WOW145/Metric.lean -o /home/runner/work/WOW-145/WOW-145/.lake/build/lib/lean/WOW145/Metric.olean -i /home/runner/work/WOW-145/WOW-145/.lake/build/lib/lean/WOW145/Metric.ilean -c /home/runner/work/WOW-145/WOW-145/.lake/build/ir/WOW145/Metric.c --setup /home/runner/work/WOW-145/WOW-145/.lake/build/ir/WOW145/Metric.setup.json --json
+warning: WOW145/Metric.lean:30:0: automatically included section variable(s) unused in theorem `WOW145.exists_center_dist_le_two_of_radius_eq_two`:
+  [DecidableEq α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:47:0: automatically included section variable(s) unused in theorem `WOW145.exists_middle_of_dist_eq_two`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:62:0: automatically included section variable(s) unused in theorem `WOW145.exists_two_middle_of_dist_eq_three`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:79:0: automatically included section variable(s) unused in theorem `WOW145.dist_le_two_of_adj_adj`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:83:0: automatically included section variable(s) unused in theorem `WOW145.dist_le_three_of_adj_adj_adj`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: WOW145/Metric.lean:88:0: automatically included section variable(s) unused in theorem `WOW145.not_adj_of_two_le_dist`:
+  [Fintype α]
+  [DecidableEq α]
+  [Nontrivial α]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype α] [DecidableEq α] [Nontrivial α] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: WOW145/Metric.lean:94:0: 'WOW145.exists_center_dist_le_two_of_radius_eq_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:95:0: 'WOW145.exists_middle_of_dist_eq_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:96:0: 'WOW145.exists_two_middle_of_dist_eq_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:97:0: 'WOW145.dist_le_two_of_adj_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:98:0: 'WOW145.dist_le_three_of_adj_adj_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Metric.lean:99:0: 'WOW145.not_adj_of_two_le_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1794/1801] Replayed WOW145.ExceptionalConstruction
+info: WOW145/ExceptionalConstruction.lean:346:0: 'WOW145.Walk.six_le_largestInducedTreeSize_of_geodesic_four_add_unique_leaf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/ExceptionalConstruction.lean:347:0: 'WOW145.six_le_largestInducedTreeSize_of_three_unique_insertions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/ExceptionalConstruction.lean:348:0: 'WOW145.six_le_largestInducedTreeSize_of_cross_arm' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1795/1801] Replayed WOW145.ExceptionalCase
+info: WOW145/ExceptionalCase.lean:215:0: 'WOW145.exceptional_case' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1797/1801] Replayed WOW145.RadiusBridge
+info: WOW145/RadiusBridge.lean:121:0: 'WrittenOnTheWallII.GraphConjecture145.exists_center_dist_le_two_of_localIndependenceMin_compl_eq_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/RadiusBridge.lean:122:0: 'WrittenOnTheWallII.GraphConjecture145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [1798/1801] Replayed WOW145.Conjecture145
+info: WOW145/Conjecture145.lean:76:0: 'WrittenOnTheWallII.GraphConjecture145.conjecture145' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [1799/1801] Replayed WOW145.Audit
+info: WOW145/Audit.lean:3:0: 'WOW145.exceptional_case' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: WOW145/Audit.lean:4:0: 'WrittenOnTheWallII.GraphConjecture145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: WOW145/Audit.lean:5:0: 'WrittenOnTheWallII.GraphConjecture145.conjecture145' depends on axioms: [propext, Classical.choice, Quot.sound]
+Some required targets logged failures:
+- WOW145.Metric
+error: build failed
+
+EXIT_STATUS=1
