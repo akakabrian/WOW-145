@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           printf 'run_id=%s\nrun_attempt=%s\nevent=%s\nworkflow_sha=%s\ncandidate_sha=%s\nstarted_utc=%s\n' \
             '${{ github.run_id }}' '${{ github.run_attempt }}' '${{ github.event_name }}' \
-            '${{ github.sha }}' '172a16e75719b66d5cd68beae76fdae85253b16e' \
+            '${{ github.sha }}' 'bebf8938b85520d777ebec7c61e7466a7053d4fb' \
             "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > arm-ci-started.txt
           cp arm-ci-started.txt /tmp/arm-ci-started.txt
           git config user.name github-actions[bot]
@@ -42,14 +42,14 @@ jobs:
           git commit -m 'ci: mark ARM Lean verification started' || true
           git push origin HEAD:main
 
-      - name: Check out exact candidate
+      - name: Check out exact green candidate
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin 172a16e75719b66d5cd68beae76fdae85253b16e
-          git checkout --detach 172a16e75719b66d5cd68beae76fdae85253b16e
+          git fetch origin bebf8938b85520d777ebec7c61e7466a7053d4fb
+          git checkout --detach bebf8938b85520d777ebec7c61e7466a7053d4fb
           cp /tmp/arm-ci-started.txt arm-ci-started.txt
-          test "$(git rev-parse HEAD)" = '172a16e75719b66d5cd68beae76fdae85253b16e'
+          test "$(git rev-parse HEAD)" = 'bebf8938b85520d777ebec7c61e7466a7053d4fb'
 
       - name: Install exact Lean toolchain
         run: |
@@ -70,7 +70,7 @@ jobs:
       - name: Download Mathlib cache
         run: lake exe cache get
 
-      - name: Verify exact candidate
+      - name: Verify exact green candidate
         id: verify
         shell: bash
         run: |
@@ -94,6 +94,20 @@ jobs:
               | tee lean-arm-source-sha256.txt
             sha256sum WOW145.lean lean-toolchain lakefile.toml \
               | tee -a lean-arm-source-sha256.txt
+            echo '$ compare frozen x64 source hashes'
+            cat > expected-source-sha256.txt <<'HASHES'
+          f20a907d1a3e8617c0be3d38cf1852156f38e766323cd4f4967de9aa7c7b9b1d  WOW145/Audit.lean
+          ec765a10f4e81af91d170dea9152b7f98071863fca2612fa7000416823652961  WOW145/Conjecture145.lean
+          0d89d044e44010d76ad7761a6f3b0ebaf2077de12e6aebfdebc21e4c1d0b2b94  WOW145/ExceptionalCase.lean
+          b1b735cac97aa8e848ef2bd17d55896e699494e41a3434cab8ca3d3eee362cd7  WOW145/ExceptionalConstruction.lean
+          171720eacff2e223c6fa241cf454000aabd7ad619b1baba555c54914542eaec6  WOW145/GlobalBounds.lean
+          2f9313dd51a2ba4e44982bfa39dffaf2ba619d6fa7f1088dcf9897502ae1b860  WOW145/Metric.lean
+          2f0bd929ed253770a145b78a6a182c473a9489f53fb229cfa90b26e7ff6a5eec  WOW145/RadiusBridge.lean
+          f1681f90595046af961e0d1f337aef8035343e21cfa2d23b1e99a0df3e086837  WOW145.lean
+          d55ca0039a5479db5b38919d005b2c427b89b3be4f0184a20f2f4eae931f5bdb  lean-toolchain
+          7d496e18de31255082ff18b610503eedd2dd815957785af1b7b2851f7d7ac951  lakefile.toml
+          HASHES
+            diff -u expected-source-sha256.txt lean-arm-source-sha256.txt
             echo '$ lake build WOW145'
             lake build WOW145
             echo '$ lake env lean -DwarningAsError=true WOW145/Audit.lean'
@@ -114,6 +128,7 @@ jobs:
           path: |
             lean-arm-ci.log
             lean-arm-source-sha256.txt
+            expected-source-sha256.txt
             lake-manifest.json
             arm-ci-started.txt
           if-no-files-found: warn
