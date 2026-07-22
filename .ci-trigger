@@ -1,2 +1,3 @@
 Trigger the isolated WOW II Conjecture 145 GitHub Actions kernel-check workflow.
 Retrigger after removing scheduled runner churn.
+Retrigger on the Ubuntu 22.04 hosted runner pool.
