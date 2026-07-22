@@ -9,7 +9,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: wow145-arm
+  cancel-in-progress: true
 
 jobs:
   verify-arm:
@@ -17,11 +21,35 @@ jobs:
     timeout-minutes: 90
 
     steps:
-      - name: Check out exact candidate
+      - name: Check out reporting branch
         uses: actions/checkout@v4
         with:
-          ref: 172a16e75719b66d5cd68beae76fdae85253b16e
+          ref: main
           fetch-depth: 0
+
+      - name: Publish ARM run-start marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'run_id=%s\nrun_attempt=%s\nevent=%s\nworkflow_sha=%s\ncandidate_sha=%s\nstarted_utc=%s\n' \
+            '${{ github.run_id }}' '${{ github.run_attempt }}' '${{ github.event_name }}' \
+            '${{ github.sha }}' '172a16e75719b66d5cd68beae76fdae85253b16e' \
+            "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > arm-ci-started.txt
+          cp arm-ci-started.txt /tmp/arm-ci-started.txt
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -f arm-ci-started.txt
+          git commit -m 'ci: mark ARM Lean verification started' || true
+          git push origin HEAD:main
+
+      - name: Check out exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin 172a16e75719b66d5cd68beae76fdae85253b16e
+          git checkout --detach 172a16e75719b66d5cd68beae76fdae85253b16e
+          cp /tmp/arm-ci-started.txt arm-ci-started.txt
+          test "$(git rev-parse HEAD)" = '172a16e75719b66d5cd68beae76fdae85253b16e'
 
       - name: Install exact Lean toolchain
         run: |
@@ -87,7 +115,30 @@ jobs:
             lean-arm-ci.log
             lean-arm-source-sha256.txt
             lake-manifest.json
+            arm-ci-started.txt
           if-no-files-found: warn
+
+      - name: Publish ARM compiler evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f lean-arm-ci.log && cp lean-arm-ci.log /tmp/lean-arm-ci.log || true
+          test -f lean-arm-source-sha256.txt && cp lean-arm-source-sha256.txt /tmp/lean-arm-source-sha256.txt || true
+          git reset --hard
+          git clean -fdx
+          git fetch origin main
+          git checkout -B main origin/main
+          cp /tmp/arm-ci-started.txt arm-ci-started.txt
+          test -f /tmp/lean-arm-ci.log && cp /tmp/lean-arm-ci.log lean-arm-ci.log || true
+          test -f /tmp/lean-arm-source-sha256.txt && cp /tmp/lean-arm-source-sha256.txt lean-arm-source-sha256.txt || true
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -f arm-ci-started.txt
+          test -f lean-arm-ci.log && git add -f lean-arm-ci.log || true
+          test -f lean-arm-source-sha256.txt && git add -f lean-arm-source-sha256.txt || true
+          git commit -m 'ci: publish ARM Lean verification evidence' || true
+          git push origin HEAD:main
 
       - name: Fail job when Lean failed
         if: steps.verify.outputs.exit_status != '0'
