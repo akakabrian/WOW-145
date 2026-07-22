@@ -14,7 +14,16 @@
 
 ## LEAN
 
-**IN PROGRESS.** GitHub Actions is configured to use Lean 4.27.0, pin the audited WOW-146 dependency commit, build `WOW145`, compile `WOW145/Audit.lean` with warnings as errors, print theorem axioms, reject forbidden shortcuts, and publish the compiler log.
+**BLOCKED (GitHub Actions launch gate).** The repository contains:
+
+- exact Lean 4.27.0 toolchain configuration;
+- a pinned dependency on audited WOW-146 commit `18201d492b52a2f82a2966551aed1640c45ec13b`;
+- `lake build WOW145` and warning-as-error audit commands;
+- forbidden-token and source-hash checks;
+- a run-start marker and committed compiler-evidence mechanism;
+- push, manual, and five-minute scheduled triggers.
+
+Normal content pushes and the scheduled boundaries at 16:40 and 16:45 Pacific/Honolulu on July 21, 2026 produced no `ci-run-started.txt` marker. Therefore no evidence shows that a GitHub-hosted runner began executing the workflow. This is not a Lean success or Lean failure.
 
 ## REVIEW
 
@@ -26,4 +35,4 @@
 
 ## NEXT
 
-Read `lean-ci.log`, repair any elaboration errors without changing the theorem statement, and repeat until the exact kernel and axiom audits pass.
+In the repository’s **Actions** tab, enable workflows if GitHub presents an enablement banner, then select **Verify WOWII 145** and choose **Run workflow** on `main`. Once the runner starts, `ci-run-started.txt` and then `lean-ci.log` will be committed automatically. Read that log, repair any elaboration errors without changing the theorem statement, and repeat until the exact kernel and axiom audits pass.
