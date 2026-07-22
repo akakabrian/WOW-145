@@ -1,0 +1,13 @@
+name = "wow_145"
+version = "0.1.0"
+defaultTargets = ["WOW145"]
+
+# Reuse only the independently audited metric and exceptional induced-tree
+# support modules from the isolated WOW II Conjecture 146 development.
+[[require]]
+name = "wow_146"
+git = "https://github.com/akakabrian/WOW-146.git"
+rev = "18201d492b52a2f82a2966551aed1640c45ec13b"
+
+[[lean_lib]]
+name = "WOW145"
