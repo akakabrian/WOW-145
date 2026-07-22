@@ -36,20 +36,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Publish run-start marker
-        if: github.event_name != 'pull_request'
-        shell: bash
-        run: |
-          printf 'run_id=%s\nrun_attempt=%s\nevent=%s\nref=%s\nsha=%s\nstarted_utc=%s\n' \
-            '${{ github.run_id }}' '${{ github.run_attempt }}' '${{ github.event_name }}' \
-            '${{ github.ref }}' '${{ github.sha }}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            > ci-run-started.txt
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -f ci-run-started.txt
-          git commit -m 'ci: mark Lean verification run started'
-          git push origin HEAD:${GITHUB_REF_NAME}
-
       - name: Install exact Lean toolchain
         run: |
           curl --proto '=https' --tlsv1.2 -sSf \
@@ -60,13 +46,11 @@ jobs:
       - name: Resolve pinned dependencies
         run: lake update
 
-      - name: Restore dependency build cache
+      - name: Restore Formal Conjectures build cache
         uses: actions/cache@v4
         with:
-          path: |
-            .lake/packages/formal_conjectures/.lake/build
-            .lake/packages/wow_146/.lake/build
-          key: wow145-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}
+          path: .lake/packages/formal_conjectures/.lake/build
+          key: wow145-formal-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}
 
       - name: Download Mathlib cache
         run: lake exe cache get
@@ -80,6 +64,11 @@ jobs:
           {
             echo '$ lean --version'
             lean --version
+            echo '$ reject Conjecture 146 package references'
+            if grep -RInE 'WOW146|wow_146' WOW145 WOW145.lean lakefile.toml; then
+              echo 'Residual Conjecture 146 dependency found.'
+              exit 1
+            fi
             echo '$ forbidden-token scan'
             if grep -RInP '\b(sorry|admit|native_decide)\b|^[[:space:]]*axiom[[:space:]]' \
                 WOW145 WOW145.lean; then
@@ -103,6 +92,7 @@ jobs:
           status=$?
           echo "exit_status=$status" >> "$GITHUB_OUTPUT"
           printf '\nEXIT_STATUS=%s\n' "$status" >> lean-ci.log
+          cat lean-ci.log
           exit 0
 
       - name: Upload verification evidence
@@ -114,19 +104,7 @@ jobs:
             lean-ci.log
             lean-source-sha256.txt
             lake-manifest.json
-            ci-run-started.txt
           if-no-files-found: warn
-
-      - name: Publish compiler log
-        if: always() && github.event_name != 'pull_request'
-        shell: bash
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          test -f lean-ci.log && git add -f lean-ci.log || true
-          test -f lean-source-sha256.txt && git add -f lean-source-sha256.txt || true
-          git commit -m 'ci: publish Lean verification evidence' || true
-          git push origin HEAD:${GITHUB_REF_NAME}
 
       - name: Fail job when Lean failed
         if: steps.verify.outputs.exit_status != '0'
