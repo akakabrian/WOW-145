@@ -13,6 +13,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
 
 permissions:
   contents: write
@@ -33,12 +35,13 @@ jobs:
           fetch-depth: 0
 
       - name: Publish run-start marker
-        if: github.event_name == 'push'
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
-          printf 'run_id=%s\nrun_attempt=%s\nref=%s\nsha=%s\nstarted_utc=%s\n' \
-            '${{ github.run_id }}' '${{ github.run_attempt }}' '${{ github.ref }}' \
-            '${{ github.sha }}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > ci-run-started.txt
+          printf 'run_id=%s\nrun_attempt=%s\nevent=%s\nref=%s\nsha=%s\nstarted_utc=%s\n' \
+            '${{ github.run_id }}' '${{ github.run_attempt }}' '${{ github.event_name }}' \
+            '${{ github.ref }}' '${{ github.sha }}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            > ci-run-started.txt
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -f ci-run-started.txt
@@ -112,8 +115,8 @@ jobs:
             ci-run-started.txt
           if-no-files-found: warn
 
-      - name: Publish compiler log on branch pushes
-        if: always() && github.event_name == 'push'
+      - name: Publish compiler log
+        if: always() && github.event_name != 'pull_request'
         shell: bash
         run: |
           git config user.name github-actions[bot]
