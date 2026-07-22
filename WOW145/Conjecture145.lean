@@ -57,7 +57,7 @@ theorem conjecture145 (G : SimpleGraph α) [DecidableRel G.Adj] (h : G.Connected
     have hellRaw : localIndependenceMin Gᶜ = 1 := by
       simpa [ell] using hellOne
     have hrLe : G.radius.toNat ≤ 2 :=
-      WOW145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one G h hellRaw
+      radius_toNat_le_two_of_localIndependenceMin_compl_eq_one G h hellRaw
     have hDiamRadius : d ≤ 2 * G.radius.toNat := by
       simpa [d] using diam_le_two_mul_radius_toNat h
     have hDiamRad : d ≤ 4 := by omega
