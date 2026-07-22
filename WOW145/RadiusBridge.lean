@@ -30,6 +30,8 @@ namespace WrittenOnTheWallII.GraphConjecture145
 
 open Classical SimpleGraph
 
+set_option linter.unusedSectionVars false
+
 variable {α : Type*} [Fintype α] [DecidableEq α] [Nontrivial α]
 
 /-- The minimum local independence number, copied verbatim from the target. -/
@@ -54,8 +56,9 @@ lemma exists_neighbor_of_indepNeighborsCard_pos
   change 0 < (G.induce (G.neighborSet v)).indepNum at hpos
   obtain ⟨s, hs⟩ := (G.induce (G.neighborSet v)).exists_isNIndepSet_indepNum
   have hscard : 0 < s.card := by simpa [hs.card_eq] using hpos
-  obtain ⟨w, hw⟩ := Finset.card_pos.mp hscard
-  exact ⟨w.1, by simpa using w.2⟩
+  obtain ⟨w, _⟩ := Finset.card_pos.mp hscard
+  refine ⟨w.1, ?_⟩
+  exact mem_neighborSet.mp w.2
 
 /-- If the complement local independence at `c` is one, then the nonneighbors
 of `c` in the original graph form an independent set. -/
@@ -77,8 +80,12 @@ lemma compl_neighborSet_isIndepSet_of_indepNeighborsCard_eq_one
       Set.mem_singleton_iff] at ha hb
     rcases ha with rfl | rfl <;> rcases hb with rfl | rfl
     · exact (hab rfl).elim
-    · simpa [SimpleGraph.induce_adj, SimpleGraph.compl_adj, hGzw]
-    · simpa [SimpleGraph.induce_adj, SimpleGraph.compl_adj, hGzw.symm]
+    · simp only [SimpleGraph.induce_adj, SimpleGraph.compl_adj]
+      intro _
+      simpa [z', w'] using hGzw
+    · simp only [SimpleGraph.induce_adj, SimpleGraph.compl_adj]
+      intro _
+      simpa [z', w'] using hGzw.symm
     · exact (hab rfl).elim
   have hcard := hsind.card_le_indepNum
   have hscard : s.card = 2 := by simp [s, hzw']
@@ -110,7 +117,7 @@ lemma radius_toNat_eq_two_of_localIndependenceMin_eq_one
       omega
     · have hzN : z ∈ Gᶜ.neighborSet c := by
         rw [mem_neighborSet, compl_adj]
-        exact ⟨hzc.symm, hcz⟩
+        exact ⟨Ne.symm hzc, hcz⟩
       obtain ⟨w, hzw⟩ := hG.preconnected.exists_adj_of_nontrivial z
       have hwc : w ≠ c := by
         intro hwc
@@ -136,8 +143,9 @@ lemma radius_toNat_eq_two_of_localIndependenceMin_eq_one
     apply le_iInf
     intro v
     obtain ⟨w, hvwCompl⟩ := exists_neighbor_of_indepNeighborsCard_pos Gᶜ v (hallPos v)
-    have hvwNe : v ≠ w := Gᶜ.ne_of_adj hvwCompl
-    have hvwNot : ¬ G.Adj v w := (compl_adj.mp hvwCompl).2
+    rw [compl_adj] at hvwCompl
+    have hvwNe : v ≠ w := hvwCompl.1
+    have hvwNot : ¬ G.Adj v w := hvwCompl.2
     have hdist : 2 ≤ G.dist v w := by
       have := (hG v w).one_lt_dist_of_ne_of_not_adj hvwNe hvwNot
       omega
@@ -147,6 +155,6 @@ lemma radius_toNat_eq_two_of_localIndependenceMin_eq_one
       _ ≤ G.eccent v := edist_le_eccent
 
   have hr : G.radius = (2 : ℕ∞) := le_antisymm hrLe hrGe
-  simpa [hr]
+  simp [hr]
 
 end WrittenOnTheWallII.GraphConjecture145
