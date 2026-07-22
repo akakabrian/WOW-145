@@ -1,5 +1,5 @@
 import WOW145.Conjecture145
 
 #print axioms WOW145.exceptional_case
-#print axioms WOW145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one
+#print axioms WrittenOnTheWallII.GraphConjecture145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one
 #print axioms WrittenOnTheWallII.GraphConjecture145.conjecture145
