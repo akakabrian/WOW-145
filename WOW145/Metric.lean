@@ -24,6 +24,8 @@ open Classical SimpleGraph
 
 namespace WOW145
 
+set_option linter.unusedSectionVars false
+
 variable {α : Type*} [Fintype α] [DecidableEq α] [Nontrivial α]
 
 /-- Radius two provides a center at original distance at most two from every vertex. -/
