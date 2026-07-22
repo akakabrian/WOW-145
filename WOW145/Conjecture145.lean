@@ -54,17 +54,19 @@ theorem conjecture145 (G : SimpleGraph α) [DecidableRel G.Adj] (h : G.Connected
   · have hellOne : ell = 1 := by
       have hellPos : 0 < ell := by simpa [ell] using hlMin
       omega
-    have hr : G.radius.toNat = 2 := by
-      apply radius_toNat_eq_two_of_localIndependenceMin_eq_one G h
+    have hellRaw : localIndependenceMin Gᶜ = 1 := by
       simpa [ell] using hellOne
-    have hDiamRad : d ≤ 4 := by
-      have hbound := diam_le_two_mul_radius_toNat h
-      simpa [d, hr] using hbound
+    have hrLe : G.radius.toNat ≤ 2 :=
+      WOW145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one G h hellRaw
+    have hDiamRadius : d ≤ 2 * G.radius.toNat := by
+      simpa [d] using diam_le_two_mul_radius_toNat h
+    have hDiamRad : d ≤ 4 := by omega
     have hpLeThree : p ≤ 3 := by omega
     by_cases hpThree : p = 3
     · have hdFour : d = 4 := by omega
+      have hrTwo : G.radius.toNat = 2 := by omega
       have htreeSix : 6 ≤ t := by
-        simpa [t] using WOW145.exceptional_case G h hr
+        simpa [t] using WOW145.exceptional_case G h hrTwo
           (by simpa [d] using hdFour) (by simpa [p] using hpThree)
       simpa [p, t, ell, hpThree, hellOne] using htreeSix
     · have hpLeTwo : p ≤ 2 := by omega
