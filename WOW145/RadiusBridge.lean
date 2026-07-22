@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -/
 
-import FormalConjectures.WrittenOnTheWallII.GraphConjecture145
+import FormalConjecturesForMathlib.Combinatorics.SimpleGraph.Independence
+import FormalConjecturesForMathlib.Combinatorics.SimpleGraph.Eccentricity
 import WOW145.Metric
 
 /-!
@@ -25,14 +26,17 @@ distance at most two from every vertex.  The exceptional branch later combines
 this with diameter four to obtain radius exactly two.
 -/
 
-open Classical SimpleGraph
-open WrittenOnTheWallII.GraphConjecture145
+namespace WrittenOnTheWallII.GraphConjecture145
 
-namespace WOW145
+open Classical SimpleGraph
 
 set_option linter.unusedSectionVars false
 
 variable {α : Type*} [Fintype α] [DecidableEq α] [Nontrivial α]
+
+/-- The target definition, copied verbatim from the authoritative source. -/
+noncomputable def localIndependenceMin (G : SimpleGraph α) : Nat :=
+  Finset.univ.inf' Finset.univ_nonempty (indepNeighborsCard G)
 
 private lemma exists_localIndependenceMin_eq (H : SimpleGraph α) :
     ∃ v : α, indepNeighborsCard H v = localIndependenceMin H := by
@@ -114,7 +118,7 @@ lemma radius_toNat_le_two_of_localIndependenceMin_compl_eq_one
   have hr : G.radius ≤ (2 : ℕ∞) := radius_le_eccent.trans hecc
   simpa using ENat.toNat_le_toNat hr (by simp)
 
-#print axioms WOW145.exists_center_dist_le_two_of_localIndependenceMin_compl_eq_one
-#print axioms WOW145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one
+#print axioms WrittenOnTheWallII.GraphConjecture145.exists_center_dist_le_two_of_localIndependenceMin_compl_eq_one
+#print axioms WrittenOnTheWallII.GraphConjecture145.radius_toNat_le_two_of_localIndependenceMin_compl_eq_one
 
-end WOW145
+end WrittenOnTheWallII.GraphConjecture145
