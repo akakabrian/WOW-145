@@ -14,15 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -/
 
-import WOW146.ExceptionalTheorem
+import WOW145.ExceptionalCase
 import WOW145.RadiusBridge
 
 /-!
 # Written on the Wall II — Conjecture 145
 
-A standalone proof of the exact Formal Conjectures statement. The proof uses
-only independently proved metric/induced-tree support lemmas from the isolated
-WOWII 146 development, not Conjecture 146 itself.
+A standalone proof of the exact Formal Conjectures statement.  The exceptional
+six-vertex argument is included locally; no Conjecture 146 module is imported.
 -/
 
 namespace WrittenOnTheWallII.GraphConjecture145
@@ -52,22 +51,28 @@ theorem conjecture145 (G : SimpleGraph α) [DecidableRel G.Adj] (h : G.Connected
       2 * p ≤ 2 * t := Nat.mul_le_mul_left 2 hpTree
       _ = t * 2 := by omega
       _ ≤ t * ell := Nat.mul_le_mul_left t hellTwo
-  · have hellOne : ell = 1 := by omega
-    have hr : G.radius.toNat = 2 := by
-      apply radius_toNat_eq_two_of_localIndependenceMin_eq_one G h
+  · have hellOne : ell = 1 := by
+      have hellPos : 0 < ell := by simpa [ell] using hlMin
+      omega
+    have hellRaw : localIndependenceMin Gᶜ = 1 := by
       simpa [ell] using hellOne
-    have hDiamRad : d ≤ 4 := by
-      have hbound := diam_le_two_mul_radius_toNat h
-      simpa [d, hr] using hbound
+    have hrLe : G.radius.toNat ≤ 2 :=
+      radius_toNat_le_two_of_localIndependenceMin_compl_eq_one G h hellRaw
+    have hDiamRadius : d ≤ 2 * G.radius.toNat := by
+      simpa [d] using diam_le_two_mul_radius_toNat h
+    have hDiamRad : d ≤ 4 := by omega
     have hpLeThree : p ≤ 3 := by omega
     by_cases hpThree : p = 3
     · have hdFour : d = 4 := by omega
+      have hrTwo : G.radius.toNat = 2 := by omega
       have htreeSix : 6 ≤ t := by
-        simpa [t] using WOW146.exceptional_case G h hr
+        simpa [t] using WOW145.exceptional_case G h hrTwo
           (by simpa [d] using hdFour) (by simpa [p] using hpThree)
       simpa [p, t, ell, hpThree, hellOne] using htreeSix
     · have hpLeTwo : p ≤ 2 := by omega
       have htwoP : 2 * p ≤ t := by omega
       simpa [p, t, ell, hellOne] using htwoP
+
+#print axioms WrittenOnTheWallII.GraphConjecture145.conjecture145
 
 end WrittenOnTheWallII.GraphConjecture145

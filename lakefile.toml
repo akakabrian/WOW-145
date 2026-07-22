@@ -2,12 +2,12 @@ name = "wow_145"
 version = "0.1.0"
 defaultTargets = ["WOW145"]
 
-# Reuse only the independently audited metric and exceptional induced-tree
-# support modules from the isolated WOW II Conjecture 146 development.
+# Pin the Formal Conjectures support repository directly.  This package has no
+# dependency on the separate WOW-146 development.
 [[require]]
-name = "wow_146"
-git = "https://github.com/akakabrian/WOW-146.git"
-rev = "18201d492b52a2f82a2966551aed1640c45ec13b"
+name = "formal_conjectures"
+git = "https://github.com/AlperTheKing/formal-conjectures.git"
+rev = "46bf39015f5c3c3ba3bfcf9f752b4b1e49b584ac"
 
 [[lean_lib]]
 name = "WOW145"
