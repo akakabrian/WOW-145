@@ -4,20 +4,15 @@ on:
   push:
     branches:
       - main
-      - 'agent/**'
     paths-ignore:
       - lean-ci.log
       - lean-source-sha256.txt
       - ci-run-started.txt
+      - .github/workflows/lean.yml
   pull_request:
     branches:
       - main
-  issues:
-    types:
-      - opened
   workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *'
 
 permissions:
   contents: write
@@ -28,7 +23,7 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 90
 
     steps:
