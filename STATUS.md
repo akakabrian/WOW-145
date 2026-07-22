@@ -21,9 +21,9 @@
 - `lake build WOW145` and warning-as-error audit commands;
 - forbidden-token and source-hash checks;
 - a run-start marker and committed compiler-evidence mechanism;
-- push, manual, and five-minute scheduled triggers.
+- push, pull-request, manual, scheduled, and `issues: opened` triggers.
 
-Normal content pushes and the scheduled boundaries at 16:40 and 16:45 Pacific/Honolulu on July 21, 2026 produced no `ci-run-started.txt` marker. Therefore no evidence shows that a GitHub-hosted runner began executing the workflow. This is not a Lean success or Lean failure.
+The `issues: opened` trigger was committed to `main`, and one-purpose issue #1 (`Trigger Lean verification`) was opened on July 21, 2026. No `ci-run-started.txt` marker appeared after that event. Earlier normal content pushes and scheduled boundaries also produced no marker. Therefore no evidence shows that a GitHub-hosted runner began executing the workflow. This is not a Lean success or Lean failure.
 
 ## REVIEW
 
@@ -35,4 +35,4 @@ Normal content pushes and the scheduled boundaries at 16:40 and 16:45 Pacific/Ho
 
 ## NEXT
 
-In the repository’s **Actions** tab, enable workflows if GitHub presents an enablement banner, then select **Verify WOWII 145** and choose **Run workflow** on `main`. Once the runner starts, `ci-run-started.txt` and then `lean-ci.log` will be committed automatically. Read that log, repair any elaboration errors without changing the theorem statement, and repeat until the exact kernel and axiom audits pass.
+The remaining blocker is repository-level GitHub Actions enablement or policy. Once Actions is enabled, any new issue, push, scheduled boundary, or manual dispatch should launch `Verify WOWII 145`; the workflow will commit `ci-run-started.txt` and then `lean-ci.log`. Read that log, repair any elaboration errors without changing the theorem statement, and repeat until the exact kernel and axiom audits pass.
