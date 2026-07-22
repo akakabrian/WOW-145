@@ -9,6 +9,7 @@ on:
       - lean-source-sha256.txt
       - ci-run-started.txt
       - .github/workflows/lean.yml
+      - .github/workflows/lean-arm.yml
   pull_request:
     branches:
       - main
