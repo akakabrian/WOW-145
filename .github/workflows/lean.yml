@@ -8,6 +8,9 @@ on:
       - lean-ci.log
       - lean-source-sha256.txt
       - ci-run-started.txt
+      - lean-arm-ci.log
+      - lean-arm-source-sha256.txt
+      - arm-ci-started.txt
       - .github/workflows/lean.yml
       - .github/workflows/lean-arm.yml
   pull_request:
